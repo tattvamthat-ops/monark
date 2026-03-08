@@ -190,6 +190,25 @@ z-index:4;
 pointer-events:none;
 }
 
+#finalMessage #videoSoundBtn{
+position:absolute;
+bottom:30px;
+left:50%;
+transform:translateX(-50%);
+z-index:6;
+padding:10px 18px;
+border-radius:999px;
+border:none;
+background:rgba(0,0,0,0.55);
+color:#fff;
+font-size:16px;
+cursor:pointer;
+}
+
+#finalMessage #videoSoundBtn:hover{
+background:rgba(0,0,0,0.75);
+}
+
 /* Floating hearts */
 
 .heart{
@@ -243,6 +262,7 @@ opacity:0;
 <video id="finalVideo" src="video.mp4" loop playsinline></video>
 <div id="heartContainer"></div>
 <div class="finalText">Happy Women's Day</div>
+<button id="videoSoundBtn" type="button">Play with sound</button>
 </div>
 
 <script>
@@ -391,9 +411,19 @@ document.getElementById("balloon-area").style.display="none"
 document.getElementById("finalMessage").style.display="flex"
 
 const video=document.getElementById("finalVideo")
+const soundBtn=document.getElementById("videoSoundBtn")
 if(video){
+video.muted=true
+video.play().catch(()=>{})
+}
+
+if(soundBtn && video){
+soundBtn.style.display="inline-block"
+soundBtn.onclick=()=>{
 video.muted=false
 video.play().catch(()=>{})
+soundBtn.style.display="none"
+}
 }
 
 startHearts()
