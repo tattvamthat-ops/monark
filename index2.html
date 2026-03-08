@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For Monark</title>
+
+<style>
+
+body{
+margin:0;
+font-family:"Segoe UI",sans-serif;
+background:linear-gradient(180deg,#f3e6d8,#e7d3bd);
+overflow:hidden;
+}
+
+/* Opening screen */
+
+#opening{
+position:absolute;
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:72px;
+font-weight:700;
+color:#5a3e2b;
+background:#f3e6d8;
+z-index:10;
+transition:opacity 2s;
+}
+
+/* Balloon area */
+
+#balloon-area{
+position:absolute;
+width:100%;
+height:100%;
+display:none;
+}
+
+/* Balloons */
+
+.balloon{
+width:70px;
+height:90px;
+border-radius:50% 50% 45% 45%;
+position:absolute;
+cursor:pointer;
+animation:float 3s ease-in-out infinite;
+box-shadow: inset -4px -6px 10px rgba(0,0,0,0.1);
+}
+
+.balloon::after{
+content:"";
+width:2px;
+height:40px;
+background:#6a4b36;
+position:absolute;
+left:50%;
+top:90px;
+}
+
+@keyframes float{
+0%{transform:translateY(0)}
+50%{transform:translateY(-10px)}
+100%{transform:translateY(0)}
+}
+
+/* Photo container */
+
+#blurOverlay{
+position:fixed;
+inset:0;
+z-index:15;
+backdrop-filter:blur(12px);
+-webkit-backdrop-filter:blur(12px);
+background:rgba(0,0,0,0.12);
+display:none;
+}
+
+#photoContainer{
+position:fixed;
+inset:0;
+display:none;
+align-items:center;
+justify-content:center;
+z-index:20;
+pointer-events:none;
+}
+
+#photoContainer.hasPhoto{
+pointer-events:auto;
+}
+
+.polaroid{
+position:relative;
+background:white;
+padding:20px 20px 55px 20px;
+box-shadow:0 20px 50px rgba(0,0,0,0.35);
+text-align:center;
+pointer-events:auto;
+max-width:88vw;
+max-height:88vh;
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+.polaroid img{
+max-width:72vw;
+max-height:65vh;
+width:auto;
+height:auto;
+object-fit:contain;
+display:block;
+}
+
+.caption{
+margin-top:12px;
+font-size:18px;
+color:#333;
+flex-shrink:0;
+}
+
+.closeBtn{
+position:absolute;
+top:8px;
+right:14px;
+font-size:26px;
+cursor:pointer;
+color:#555;
+z-index:1;
+}
+
+.closeBtn:hover{
+color:black;
+}
+
+/* Confetti */
+
+.confetti{
+position:absolute;
+width:6px;
+height:6px;
+opacity:0.9;
+animation:confettiFall 1s ease-out forwards;
+}
+
+@keyframes confettiFall{
+0%{transform:translate(0,0)}
+100%{transform:translate(var(--x),var(--y));opacity:0}
+}
+
+/* Final message */
+
+#finalMessage{
+position:absolute;
+width:100%;
+height:100%;
+display:none;
+align-items:center;
+justify-content:center;
+font-size:72px;
+font-weight:700;
+color:rgba(255,255,255,0.95);
+text-shadow:0 2px 8px rgba(0,0,0,0.3);
+overflow:hidden;
+}
+
+#finalMessage .finalText{
+position:relative;
+z-index:5;
+}
+
+#finalMessage video{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+object-fit:cover;
+z-index:0;
+}
+
+#finalMessage #heartContainer{
+position:absolute;
+inset:0;
+z-index:4;
+pointer-events:none;
+}
+
+/* Floating hearts */
+
+.heart{
+position:absolute;
+width:20px;
+height:20px;
+background:#f48fb1;
+transform:rotate(45deg);
+animation:floatHeart 6s linear infinite;
+}
+
+.heart:before,
+.heart:after{
+content:"";
+position:absolute;
+width:20px;
+height:20px;
+background:#f48fb1;
+border-radius:50%;
+}
+
+.heart:before{ top:-10px; left:0; }
+.heart:after{ left:-10px; top:0; }
+
+@keyframes floatHeart{
+0%{
+transform:translateY(100vh) rotate(45deg);
+opacity:0;
+}
+10%{opacity:1;}
+100%{
+transform:translateY(-120vh) rotate(45deg);
+opacity:0;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="opening">For Monark</div>
+
+<div id="balloon-area"></div>
+
+<div id="blurOverlay"></div>
+
+<div id="photoContainer"></div>
+
+<div id="finalMessage">
+<video id="finalVideo" src="video.mp4" loop playsinline></video>
+<div id="heartContainer"></div>
+<div class="finalText">Happy Women's Day</div>
+</div>
+
+<script>
+
+/* EDIT YOUR IMAGES AND CAPTIONS HERE */
+
+const balloonsData=[
+{image:"image1.jpg",caption:"To the one who leaves notes in the gardens of Eden"},
+{image:"image2.jpg",caption:"To the one who places me only slightly under Oscar Wilde"},
+{image:"image3.jpg",caption:"To the one who has heart-shaped mosquitoe bites"},
+{image:"image4.jpg",caption:"To the one who is tastier than any food possibly can be"},
+{image:"image5.jpg",caption:"To the one who can be a red-hair baddie even without the red-hair"},
+{image:"image6.jpg",caption:"To the one who is slightly taller than the northern sun"},
+{image:"image7.jpg",caption:"To the one who shines brighter than the city of stars"},
+{image:"image8.jpg",caption:"To the one who lives and loves in libraries"},
+{image:"image9.jpeg",caption:"To the one who keeps my notes in the back of her phone"},
+{image:"image10.jpg",caption:"To the one who broke my guiter but mended my heart"},
+{image:"image11.jpg",caption:"To the one who brought sweets for me (and refused to share)"},
+{image:"image12.jpg",caption:"To the one who is my goddess"},
+{image:"image13.jpg",caption:"To the one who cracks the worst jokes and then laughs at them"},
+{image:"image14.jpg",caption:"To the one who I fell in love with in a muesuem"},
+{image:"image15.jpg",caption:"To the one who even flowers wish to wear"},
+{image:"image16.jpg",caption:"To the one who drives invisible scooties"},
+{image:"image18.png",caption:"To the one who makes tasty food out of dahi"},
+{image:"image19.png",caption:"To the one who I am proud of"}
+]
+
+const balloonColors=[
+"#FF8A80","#FFAB91","#FFD180","#FFF59D",
+"#A5D6A7","#80DEEA","#90CAF9","#B39DDB",
+"#F48FB1","#CE93D8"
+]
+
+let popped=0
+const balloonArea=document.getElementById("balloon-area")
+const photoContainer=document.getElementById("photoContainer")
+
+const popSound=new Audio("https://assets.mixkit.co/sfx/preview/mixkit-balloon-pop-2357.mp3")
+
+function createBalloons(){
+
+balloonsData.forEach(data=>{
+
+let balloon=document.createElement("div")
+balloon.className="balloon"
+
+balloon.style.background=
+balloonColors[Math.floor(Math.random()*balloonColors.length)]
+
+balloon.style.left=(Math.random()*85+5)+"%"
+balloon.style.top=(Math.random()*70+10)+"%"
+
+balloon.onclick=(e)=>popBalloon(balloon,data,e)
+
+balloonArea.appendChild(balloon)
+
+})
+
+}
+
+function popBalloon(balloon,data,event){
+
+balloon.remove()
+
+popSound.currentTime=0
+popSound.play()
+
+createConfetti(event.clientX,event.clientY)
+
+showPolaroid(data)
+
+popped++
+
+if(popped===balloonsData.length){
+setTimeout(showFinal,2000)
+}
+
+}
+
+function showPolaroid(data){
+
+const container=document.getElementById("photoContainer")
+const blurOverlay=document.getElementById("blurOverlay")
+
+container.innerHTML=""
+
+const polaroid=document.createElement("div")
+polaroid.className="polaroid"
+polaroid.innerHTML=`
+<div class="closeBtn" onclick="closePolaroid(this.parentElement)">×</div>
+<img src="${data.image}" alt="">
+<div class="caption">${data.caption}</div>
+`
+
+container.appendChild(polaroid)
+container.style.display="flex"
+container.classList.add("hasPhoto")
+blurOverlay.style.display="block"
+}
+
+function closePolaroid(polaroid){
+polaroid.remove()
+const container=document.getElementById("photoContainer")
+const blurOverlay=document.getElementById("blurOverlay")
+if(container.querySelectorAll(".polaroid").length===0){
+blurOverlay.style.display="none"
+container.style.display="none"
+container.classList.remove("hasPhoto")
+}
+}
+
+/* Confetti burst */
+
+function createConfetti(x,y){
+
+for(let i=0;i<18;i++){
+
+let conf=document.createElement("div")
+conf.className="confetti"
+
+conf.style.background=
+balloonColors[Math.floor(Math.random()*balloonColors.length)]
+
+let dx=(Math.random()*200)-100
+let dy=(Math.random()*200)-100
+
+conf.style.left=x+"px"
+conf.style.top=y+"px"
+
+conf.style.setProperty("--x",dx+"px")
+conf.style.setProperty("--y",dy+"px")
+
+document.body.appendChild(conf)
+
+setTimeout(()=>conf.remove(),1000)
+
+}
+
+}
+
+/* Final screen */
+
+function showFinal(){
+
+document.getElementById("balloon-area").style.display="none"
+document.getElementById("finalMessage").style.display="flex"
+
+const video=document.getElementById("finalVideo")
+if(video){
+video.muted=false
+video.play().catch(()=>{})
+}
+
+startHearts()
+
+}
+
+/* Floating hearts */
+
+function startHearts(){
+
+const container=document.getElementById("heartContainer")
+
+setInterval(()=>{
+
+let heart=document.createElement("div")
+heart.className="heart"
+
+heart.style.left=Math.random()*100+"%"
+heart.style.animationDuration=(4+Math.random()*3)+"s"
+
+container.appendChild(heart)
+
+setTimeout(()=>heart.remove(),7000)
+
+},400)
+
+}
+
+/* Opening animation */
+
+setTimeout(()=>{
+
+document.getElementById("opening").style.opacity=0
+
+setTimeout(()=>{
+document.getElementById("opening").style.display="none"
+document.getElementById("balloon-area").style.display="block"
+createBalloons()
+},2000)
+
+},2000)
+
+</script>
+
+</body>
+</html>
